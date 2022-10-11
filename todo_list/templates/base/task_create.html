@@ -1,4 +1,5 @@
-<h3>Create Task Form</h3>
+<h1>Create Task Form</h1>
+<h3><a href=" {% url 'tasks' %} ">Go Back</a></h3>
 <form method="post" action="">
 {% csrf_token %}
 {{form.as_p}}
