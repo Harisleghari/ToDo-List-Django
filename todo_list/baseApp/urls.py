@@ -1,7 +1,11 @@
 from django.urls import path
-from .views import CreateList, DetailList, TaskList, UpdateList, DeleteList
+from .views import CreateList, DetailList, TaskList, UpdateList, DeleteList, CustomLogin
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
+    path('login', CustomLogin.as_view(), name="login"),
+    path('logout', LogoutView.as_view(next_page = 'login'), name="logout"),
+
     path('', TaskList.as_view(), name="tasks"),
     path('task/<int:pk>', DetailList.as_view(), name="detail"),
     path('create-list', CreateList.as_view(), name="create"),
