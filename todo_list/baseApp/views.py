@@ -1,16 +1,19 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+
 
 
 from .models import Task
 
-
+#login Page
 class CustomLogin(LoginView):
     template_name = 'base/loginpage.html'
     fields = '__all__'
@@ -20,6 +23,27 @@ class CustomLogin(LoginView):
         return reverse_lazy('tasks')
 
 
+#Register Page
+class RegisterPage(FormView):
+    template_name = 'base/register.html'
+    form_class = UserCreationForm
+    redirect_authenticated_user: True
+    success_url = reverse_lazy('tasks')
+
+    def form_valid(self, form):
+        user = form.save()
+        if user is not None:
+            login(self.request, user)
+        return super(RegisterPage, self).form_valid(form)
+
+    #authentication user not allowd to register again
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return redirect('tasks')
+        return super(RegisterPage, self).get(*args, **kwargs)
+
+
+#Show Tasks
 class TaskList(LoginRequiredMixin, ListView):
     model = Task
     template_name = 'base/task_list.html'
@@ -32,13 +56,13 @@ class TaskList(LoginRequiredMixin, ListView):
         context['count'] = context['tasks'].filter(complete=False).count()
         return context
 
-
+#Give Detail about existing task
 class DetailList(LoginRequiredMixin, DetailView):
     model = Task
     template_name = 'base/task_detail.html'
     context_object_name = 'tasks'
 
-
+#Create new task
 class CreateList(LoginRequiredMixin, CreateView):
     model = Task
     fields = ['title', 'description', 'complete']
@@ -50,14 +74,14 @@ class CreateList(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         return super(CreateList, self).form_valid(form)
 
-
+#Update an existing task
 class UpdateList(LoginRequiredMixin, UpdateView):
     model = Task
     fields = ['title', 'description', 'complete']
     template_name = 'base/task_create.html'
     success_url = reverse_lazy('tasks')
 
-
+#Delete an existing task
 class DeleteList(LoginRequiredMixin, DeleteView):
     model = Task
     context_object_name = 'task'

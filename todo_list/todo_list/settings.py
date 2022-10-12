@@ -112,6 +112,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+#use for login view
 LOGIN_URL = 'login'
 
 
