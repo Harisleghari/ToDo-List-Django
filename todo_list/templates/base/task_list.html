@@ -9,6 +9,11 @@
 <h1>My To Do List</h1>
 <h3><a href=" {% url 'create' %} ">Add Task</a></h3>
 
+<form method='get' action="">
+    <input type="text" name='search_area' value='{{search_input}}'>
+    <button type='submit'>Search</button>
+</form>
+
 <table>
     <tr>
         <th>Item</th>
