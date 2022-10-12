@@ -24,6 +24,13 @@ class TaskList(LoginRequiredMixin, ListView):
     model = Task
     template_name = 'base/task_list.html'
     context_object_name = 'tasks'
+    
+    #User Specific Data
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tasks'] = context['tasks'].filter(user=self.request.user)
+        context['count'] = context['tasks'].filter(complete=False).count()
+        return context
 
 
 class DetailList(LoginRequiredMixin, DetailView):
@@ -34,14 +41,19 @@ class DetailList(LoginRequiredMixin, DetailView):
 
 class CreateList(LoginRequiredMixin, CreateView):
     model = Task
-    fields = '__all__'
+    fields = ['title', 'description', 'complete']
     template_name = 'base/task_create.html'
     success_url = reverse_lazy('tasks')
+
+    #Automatically know th current user that login
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(CreateList, self).form_valid(form)
 
 
 class UpdateList(LoginRequiredMixin, UpdateView):
     model = Task
-    fields = '__all__'
+    fields = ['title', 'description', 'complete']
     template_name = 'base/task_create.html'
     success_url = reverse_lazy('tasks')
 
