@@ -12,7 +12,7 @@ urlpatterns = [
     path('task/<int:pk>', DetailList.as_view(), name="detail"),
     path('create-list', CreateList.as_view(), name="create"),
     path('update/<int:pk>', UpdateList.as_view(), name="update"),
-    path('delete/<int:pk>', DeleteList.as_view(), name="delete")
+    path('delete/<int:pk>', DeleteList.as_view(),  name="delete")
 
 
     
